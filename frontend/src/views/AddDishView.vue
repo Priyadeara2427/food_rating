@@ -76,7 +76,7 @@
           </div>
 
           <div class="form-group">
-            <label for="price">Price ($) *</label>
+            <label for="price">Price (₹) *</label>
             <input 
               type="number" 
               id="price" 
@@ -192,61 +192,75 @@ export default {
       }
     },
     async submitForm() {
-    // Validate all fields
-    Object.keys(this.form).forEach(field => this.validateField(field))
-    
-    if (!this.isFormValid) {
+      // Validate all fields
+      Object.keys(this.form).forEach(field => this.validateField(field))
+      
+      if (!this.isFormValid) {
         this.showError('Please fix all errors before submitting')
         return
-    }
+      }
 
-    this.submitting = true
+      this.submitting = true
 
-    try {
+      try {
+        // Create dish data with nested canteen object
         const dishData = {
-        name: this.form.name.trim(),
-        description: this.form.description.trim(),
-        category: this.form.category,
-        price: parseFloat(this.form.price),
-        rating: parseInt(this.form.rating),
-        canteenId: parseInt(this.form.canteenId)  // Send canteenId directly
+          name: this.form.name.trim(),
+          description: this.form.description.trim(),
+          category: this.form.category,
+          price: parseFloat(this.form.price),
+          rating: parseInt(this.form.rating),
+          canteen: {
+            id: parseInt(this.form.canteenId)
+          }
         }
 
-        console.log('Sending dish data:', dishData); // Debug log
+        console.log('Sending dish data:', dishData);
 
         const response = await fetch('http://localhost:8080/api/dishes', {
-        method: 'POST',
-        headers: {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dishData)
+          },
+          body: JSON.stringify(dishData)
         })
 
-        console.log('Response status:', response.status); // Debug log
+        console.log('Response status:', response.status);
 
         if (response.ok) {
-        const result = await response.json();
-        console.log('Success response:', result); // Debug log
-        this.showSuccess('Dish added successfully!')
-        this.resetForm()
-        // Navigate to the canteen page
-        this.$router.push({ name: 'canteen', params: { id: this.form.canteenId } })
+          const result = await response.json();
+          console.log('Success response:', result);
+          
+          this.showSuccess('Dish added successfully!')
+          this.resetForm()
+          
+          // FIX: Navigate to the canteen page with proper parameters
+          // Use the canteenId from the form instead of trying to get it from response
+          if (this.form.canteenId) {
+            this.$router.push({ 
+              name: 'canteen', 
+              params: { id: this.form.canteenId.toString() } // Ensure it's a string
+            })
+          } else {
+            // Fallback: go back to home if no canteenId
+            this.$router.push({ name: 'home' })
+          }
         } else {
-        let errorMessage = 'Failed to add dish';
-        try {
+          let errorMessage = 'Failed to add dish';
+          try {
             const errorData = await response.json();
             errorMessage += ': ' + (errorData.message || errorData || 'Unknown error');
-        } catch (e) {
+          } catch (e) {
             errorMessage += `: HTTP ${response.status} - ${response.statusText}`;
+          }
+          this.showError(errorMessage)
         }
-        this.showError(errorMessage)
-        }
-    } catch (error) {
+      } catch (error) {
         console.error('Error adding dish:', error)
-        this.showError('Failed to add dish. Please check if backend is running.')
-    } finally {
+        this.showError('Failed to add dish: ' + error.message)
+      } finally {
         this.submitting = false
-    }
+      }
     },
     resetForm() {
       this.form = {

@@ -32,7 +32,7 @@
             <p class="dish-description">{{ dish.description }}</p>
             <div class="dish-details">
               <span class="category">Category: {{ dish.category }}</span>
-              <span class="price">${{ dish.price.toFixed(2) }}</span>
+              <span class="price">₹{{ dish.price.toFixed(2) }}</span>
             </div>
             <div class="dish-actions">
               <button @click="rateDish(dish.id)" class="btn-rate">Rate This Dish</button>
@@ -54,7 +54,7 @@
           <button 
             v-for="rating in 5" 
             :key="rating" 
-            @click="submitRating(rating)"
+            @click="tempRating = rating"
             class="rating-option"
             :class="{ active: tempRating === rating }"
           >
@@ -62,8 +62,8 @@
           </button>
         </div>
         <div class="modal-actions">
-          <button @click="showRatingModal = false" class="btn-cancel">Cancel</button>
-          <button @click="submitRating(tempRating)" class="btn-confirm" :disabled="!tempRating">
+          <button @click="cancelRating" class="btn-cancel">Cancel</button>
+          <button @click="submitRating" class="btn-confirm" :disabled="!tempRating">
             Submit Rating
           </button>
         </div>
@@ -127,8 +127,13 @@ export default {
       this.tempRating = this.selectedDish.rating
       this.showRatingModal = true
     },
-    async submitRating(rating) {
-      if (!this.selectedDish) return
+    cancelRating() {
+      this.showRatingModal = false
+      this.tempRating = 0
+      this.selectedDish = null
+    },
+    async submitRating() {
+      if (!this.selectedDish || !this.tempRating) return
 
       try {
         const response = await fetch(`http://localhost:8080/api/dishes/${this.selectedDish.id}`, {
@@ -138,7 +143,7 @@ export default {
           },
           body: JSON.stringify({
             ...this.selectedDish,
-            rating: rating
+            rating: this.tempRating
           })
         })
 

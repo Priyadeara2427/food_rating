@@ -15,9 +15,6 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private CanteenRepository canteenRepository;
 
-    @Autowired
-    private DishRepository dishRepository;
-
     @Override
     public void run(String... args) throws Exception {
         // Load sample data only if database is empty
