@@ -3,7 +3,6 @@ package com.foodrating.config;
 import com.foodrating.entity.Canteen;
 import com.foodrating.entity.Dish;
 import com.foodrating.repository.CanteenRepository;
-import com.foodrating.repository.DishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
