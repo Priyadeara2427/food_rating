@@ -170,8 +170,11 @@ export default {
       }
     },
     editDish(dishId) {
-      // Navigate to edit dish page or show edit modal
-      this.showError('Edit functionality not implemented yet')
+      // Navigate to edit dish page
+      this.$router.push({ 
+        name: 'edit-dish', 
+        params: { id: dishId.toString() }
+      })
     },
     goToAddDish() {
       this.$router.push({ 
