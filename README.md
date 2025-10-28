@@ -1,4 +1,4 @@
-# 🍽️ Canteen Food Rating System
+# 🍽️ Canteen Food & Rating System
 
 A full-stack web application for managing canteens, dishes, and ratings built with Spring Boot, PostgreSQL, and Vue.js.
 
@@ -315,3 +315,4 @@ For issues and questions:
 ---
 
 **Happy Coding! 🚀**
+
